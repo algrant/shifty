@@ -1,13 +1,7 @@
 from PIL import Image, ImageFilter
 import numpy as np
 from math import floor
-
-def addArraysAtPoint(big, small, topLeft):
-  tL = topLeft
-  # vertical & horizontal bounds
-  vB = np.clip([tL[0], tL[0] + small.shape[0]], 0, big.shape[0])
-  hB = np.clip([tL[1], tL[1] + small.shape[1]], 0, big.shape[1])
-  big[vB[0]:vB[1], hB[0]:hB[1]] += small[vB[0]-tL[0]:vB[1]-tL[0], hB[0]-tL[1]:hB[1]-tL[1]]  
+from utils import addArraysAtPoint
 
 def genErrorArray(error):
   os = error*1.0/16.0
@@ -33,7 +27,7 @@ def applyFancyError(im, dith, error, index):
   tL = index
   
   # error diffusion matrix
-  eD = np.array([[1.,3.,1.],[3.,0,3.],[1.,3.,1.]])
+  eD = np.array([[1.,3.,5.,3.,1.],[3.,5.,7.,5.,3.],[5.,7.,0.,7.,5.],[3.,5.,7.,5.,3.],[1.,3.,5.,3.,1.]])
 
   # vertical & horizontal bounds
   vB = np.clip([tL[0], tL[0] + eD.shape[0]], 0, im.shape[0])
@@ -62,23 +56,12 @@ def saveBW(imArray, filename):
   im.putdata(np.reshape(np.uint8((imArray)), [imArray.size, 1]))
   im.save(filename)
 
-im = np.array(Image.open('images/al.jpeg').convert('L'))/256.0
+im = np.array(Image.open('images/hello.png').convert('L'))/256.0
 
 total = im.size - floor(np.sum(im))
-
 dithered = np.ones(im.shape)
-
-randex = np.arange(im.size)
-np.random.shuffle(randex)
-
-def to2D(ind):
-  return np.unravel_index(ind, im.shape)
-
-def original(randInd):
-  return to2D(randex[randInd])
-
-def to1DRand(index):
-  return np.ravel_multi_index(index, im.shape)
+# randex = np.arange(im.size)
+# np.random.shuffle(randex)
 
 def randMin(arr):
   a = arr.flatten()
@@ -97,7 +80,7 @@ for i in range(total):
   if i%5000 == 0:
     print(darkest, maxIndex)
     print(diff)
-    saveBW(dithered*255, "output/al3/%03d.png"%(i/5000))
+    saveBW(dithered*255, "output/hello/%03d.png"%(i/5000))
 
 
 

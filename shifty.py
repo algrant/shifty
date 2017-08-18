@@ -1,6 +1,7 @@
 from PIL import Image, ImageFilter
 import numpy as np
 from scipy.ndimage import gaussian_filter
+
 # Shifty
 
 # Inputs
